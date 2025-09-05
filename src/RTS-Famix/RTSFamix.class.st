@@ -16,21 +16,13 @@ RTSFamix >> diffBetweenFamixModels: model1 and: model2 [
 { #category : 'getter' }
 RTSFamix >> getStories: diffCollection [
 
-	| additionsCollection deletionsCollection renamesCollection stories |
+	| stories |
 	stories := OrderedCollection new.
 
-	additionsCollection := diffCollection additions.
+	{ diffCollection additions.
+	  diffCollection removals.
+	  diffCollection renames } do: [ :collection |
+		collection do: [ :entity | stories addAll: entity entity tags ] ].
 
-	additionsCollection do: [ :entity | stories add: entity entity tags ].
-
-	deletionsCollection := diffCollection removals.
-
-	deletionsCollection do: [ :entity | stories add: entity entity tags ].
-
-	renamesCollection := diffCollection renames.
-
-	renamesCollection do: [ :entity | stories add: entity entity tags ].
-
-	^ (stories select: [ :each | each ifNotNil: [ each isNotEmpty ] ])
-		  asSet asOrderedCollection
+	 ^(stories reject: #isNil) asSet asOrderedCollection
 ]
